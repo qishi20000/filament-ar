@@ -72,22 +72,28 @@ void FilamentApp::setObjectTransform(const mat4f& transform) {
     meshTransform = transform;
 }
 
-void FilamentApp::updatePlaneGeometry(const FilamentArPlaneGeometry& geometry) {
+void FilamentApp::updatePlaneGeometry(const char* uuid, const FilamentArPlaneGeometry& geometry) {
     auto& tcm = engine->getTransformManager();
 
-    if (!app.planeGeometry.isNull()) {
-        scene->remove(app.planeGeometry);
-        engine->destroy(app.planeGeometry);
-        tcm.destroy(app.planeGeometry);
-        EntityManager::get().destroy(1, &app.planeGeometry);
+    std::string strUUID = std::string(uuid);
+    if(app.planeGeometrys.count(strUUID) == 0)
+    {
+        app.planeGeometrys[strUUID] = planeInfo();
+    }
+    
+    if (!app.planeGeometrys[strUUID].planeGeometry.isNull()) {
+        scene->remove(app.planeGeometrys[strUUID].planeGeometry);
+        engine->destroy(app.planeGeometrys[strUUID].planeGeometry);
+        tcm.destroy(app.planeGeometrys[strUUID].planeGeometry);
+        EntityManager::get().destroy(1, &app.planeGeometrys[strUUID].planeGeometry);
     }
 
-    if (app.planeVertices) {
-        engine->destroy(app.planeVertices);
+    if (app.planeGeometrys[strUUID].planeVertices) {
+        engine->destroy(app.planeGeometrys[strUUID].planeVertices);
     }
 
-    if (app.planeIndices) {
-        engine->destroy(app.planeIndices);
+    if (app.planeGeometrys[strUUID].planeIndices) {
+        engine->destroy(app.planeGeometrys[strUUID].planeIndices);
     }
 
     if (!app.shadowPlane) {
@@ -120,7 +126,7 @@ void FilamentApp::updatePlaneGeometry(const FilamentArPlaneGeometry& geometry) {
     std::copy(geometry.vertices, geometry.vertices + vertexCount, verts);
     std::copy(geometry.indices, geometry.indices + indexCount, indices);
 
-    app.planeVertices = VertexBuffer::Builder()
+    app.planeGeometrys[strUUID].planeVertices = VertexBuffer::Builder()
         .vertexCount((uint32_t) vertexCount)
         .bufferCount(2)
     // The position buffer only has x y and z coordinates, but has the same padding as a float4.
@@ -128,7 +134,7 @@ void FilamentApp::updatePlaneGeometry(const FilamentArPlaneGeometry& geometry) {
     .attribute(VertexAttribute::TANGENTS, 1, VertexBuffer::AttributeType::FLOAT4, 0, sizeof(quatf))
     .build(*engine);
 
-    app.planeIndices = IndexBuffer::Builder()
+    app.planeGeometrys[strUUID].planeIndices = IndexBuffer::Builder()
         .indexCount((uint32_t) geometry.indexCount)
         .bufferType(IndexBuffer::IndexType::USHORT)
         .build(*engine);
@@ -140,30 +146,30 @@ void FilamentApp::updatePlaneGeometry(const FilamentArPlaneGeometry& geometry) {
     VertexBuffer::BufferDescriptor positionBuffer(verts, vertexCount * sizeof(float4), deleter);
     VertexBuffer::BufferDescriptor tangentbuffer(quats, vertexCount * sizeof(quatf), deleter);
     IndexBuffer::BufferDescriptor indexBuffer(indices, indexCount * sizeof(uint16_t), deleter);
-    app.planeVertices->setBufferAt(*engine, 0, std::move(positionBuffer));
-    app.planeVertices->setBufferAt(*engine, 1, std::move(tangentbuffer));
-    app.planeIndices->setBuffer(*engine, std::move(indexBuffer));
+    app.planeGeometrys[strUUID].planeVertices->setBufferAt(*engine, 0, std::move(positionBuffer));
+    app.planeGeometrys[strUUID].planeVertices->setBufferAt(*engine, 1, std::move(tangentbuffer));
+    app.planeGeometrys[strUUID].planeIndices->setBuffer(*engine, std::move(indexBuffer));
 
     Box aabb = RenderableManager::computeAABB((float4*) geometry.vertices,
             (uint16_t*) geometry.indices, geometry.vertexCount);  
-    EntityManager::get().create(1, &app.planeGeometry);
+    EntityManager::get().create(1, &app.planeGeometrys[strUUID].planeGeometry);
     RenderableManager::Builder(1)
         .boundingBox(aabb)
         .receiveShadows(true)
         .material(0, app.shadowPlane->createInstance())
-        .geometry(0, RenderableManager::PrimitiveType::TRIANGLES, app.planeVertices,
-                app.planeIndices, 0, geometry.indexCount)
-        .build(*engine, app.planeGeometry);
+        .geometry(0, RenderableManager::PrimitiveType::TRIANGLES, app.planeGeometrys[strUUID].planeVertices,
+                app.planeGeometrys[strUUID].planeIndices, 0, geometry.indexCount)
+        .build(*engine, app.planeGeometrys[strUUID].planeGeometry);
 
     // Allow the ground plane to receive shadows.
     auto& rcm = engine->getRenderableManager();
-    rcm.setReceiveShadows(rcm.getInstance(app.planeGeometry), true);
+    rcm.setReceiveShadows(rcm.getInstance(app.planeGeometrys[strUUID].planeGeometry), true);
 
-    tcm.create(app.planeGeometry);
-    auto i = tcm.getInstance(app.planeGeometry);
+    tcm.create(app.planeGeometrys[strUUID].planeGeometry);
+    auto i = tcm.getInstance(app.planeGeometrys[strUUID].planeGeometry);
     tcm.setTransform(i, geometry.transform);
 
-    scene->addEntity(app.planeGeometry);
+    scene->addEntity(app.planeGeometrys[strUUID].planeGeometry);
 }
 
 FilamentApp::~FilamentApp() {

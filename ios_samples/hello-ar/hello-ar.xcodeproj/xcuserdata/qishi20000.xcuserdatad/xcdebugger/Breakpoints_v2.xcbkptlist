@@ -14,9 +14,9 @@
             filePath = "hello-ar/FilamentArView/FilamentApp.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "166"
-            endingLineNumber = "166"
-            landmarkName = "FilamentApp::updatePlaneGeometry(geometry)"
+            startingLineNumber = "172"
+            endingLineNumber = "172"
+            landmarkName = "FilamentApp::updatePlaneGeometry(uuid, geometry)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

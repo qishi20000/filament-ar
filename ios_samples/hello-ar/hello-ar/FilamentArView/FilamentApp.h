@@ -17,6 +17,9 @@
 #ifndef FilamentApp_h
 #define FilamentApp_h
 
+#include <unordered_map>
+#include <string>
+
 #include <filament/Engine.h>
 #include <filament/IndirectLight.h>
 #include <filament/RenderableManager.h>
@@ -61,7 +64,7 @@ public:
         size_t indexCount;
     };
 
-    void updatePlaneGeometry(const FilamentArPlaneGeometry& geometry);
+    void updatePlaneGeometry(const char* uuid, const FilamentArPlaneGeometry& geometry);
 
 private:
 
@@ -83,7 +86,12 @@ private:
     SwapChain* swapChain = nullptr;
 
     mat4f meshTransform;
-
+    struct planeInfo
+    {
+        VertexBuffer* planeVertices = nullptr;
+        IndexBuffer* planeIndices = nullptr;
+        Entity planeGeometry;
+    };
     // App-specific
     struct {
         Material* mat;
@@ -93,12 +101,11 @@ private:
         Entity renderable;
         Entity sun;
         FullScreenTriangle* cameraFeedTriangle = nullptr;
-
-        VertexBuffer* planeVertices = nullptr;
-        IndexBuffer* planeIndices = nullptr;
-        Entity planeGeometry;
+        std::unordered_map<std::string,planeInfo> planeGeometrys;
         Material* shadowPlane = nullptr;
     } app;
+    
+
 
 };
 

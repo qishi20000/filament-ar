@@ -155,7 +155,7 @@
         if ([anchor isKindOfClass:[ARPlaneAnchor class]]) {
             ARPlaneAnchor* planeAnchor = (ARPlaneAnchor*) anchor;
             const auto& geometry = planeAnchor.geometry;
-            app->updatePlaneGeometry(FilamentApp::FilamentArPlaneGeometry {
+            app->updatePlaneGeometry([[anchor.identifier UUIDString] UTF8String], FilamentApp::FilamentArPlaneGeometry {
                 .transform = FILAMENT_MAT4F_FROM_SIMD(planeAnchor.transform),
                 // geometry.vertices is an array of simd_float3's, but they're padded to be the
                 // same length as a float4.
