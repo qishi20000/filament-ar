@@ -13,7 +13,7 @@ set -e
 # These will be compiled into the final binary via the resgen tool.
 
 HOST_TOOLS_PATH="${HOST_TOOLS_PATH:-../../filament-v1.53.1-mac/bin}"
-PROJECT_DIR=/Users/qishi20000/Documents/Codes/render/filament_example/ios_samples/hello-ar
+PROJECT_DIR=/Users/qishi20000/Documents/Codes/render/AR/filament_example/ios_samples/hello-ar
 
 filamesh_path=`find ${HOST_TOOLS_PATH} -name filamesh -type f | head -n 1`
 matc_path=`find ${HOST_TOOLS_PATH} -name matc -type f | head -n 1`
@@ -68,6 +68,12 @@ mkdir -p "${PROJECT_DIR}/generated/"
     --platform mobile \
     -o "${PROJECT_DIR}/generated/shadow_plane.filamat" \
     "${PROJECT_DIR}/Materials/shadow_plane.mat"
+    
+"${matc_path}" \
+    --api all \
+    --platform mobile \
+    -o "${PROJECT_DIR}/generated/unlit_color.filamat" \
+    "${PROJECT_DIR}/Materials/unlit_color.mat"
 
 "${matc_path}" \
     --api all \
@@ -89,6 +95,7 @@ mkdir -p "${PROJECT_DIR}/generated/"
     "${PROJECT_DIR}/generated/cube.filamesh" \
     "${PROJECT_DIR}/generated/clear_coat.filamat" \
     "${PROJECT_DIR}/generated/shadow_plane.filamat" \
+    "${PROJECT_DIR}/generated/unlit_color.filamat" \
     "${PROJECT_DIR}/generated/camera_feed.filamat" \
     "${PROJECT_DIR}/generated/venetian_crossroads_2k/venetian_crossroads_2k_ibl.ktx"
 

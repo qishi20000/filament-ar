@@ -92,7 +92,7 @@ void FilamentApp::updatePlaneGeometry(const FilamentArPlaneGeometry& geometry) {
 
     if (!app.shadowPlane) {
         app.shadowPlane = Material::Builder()
-            .package(RESOURCES_SHADOW_PLANE_DATA, RESOURCES_SHADOW_PLANE_SIZE)
+            .package(RESOURCES_UNLIT_COLOR_DATA, RESOURCES_UNLIT_COLOR_SIZE)
             .build(*engine);
     }
 
@@ -145,12 +145,12 @@ void FilamentApp::updatePlaneGeometry(const FilamentArPlaneGeometry& geometry) {
     app.planeIndices->setBuffer(*engine, std::move(indexBuffer));
 
     Box aabb = RenderableManager::computeAABB((float4*) geometry.vertices,
-            (uint16_t*) geometry.indices, geometry.vertexCount);
+            (uint16_t*) geometry.indices, geometry.vertexCount);  
     EntityManager::get().create(1, &app.planeGeometry);
     RenderableManager::Builder(1)
         .boundingBox(aabb)
         .receiveShadows(true)
-        .material(0, app.shadowPlane->getDefaultInstance())
+        .material(0, app.shadowPlane->createInstance())
         .geometry(0, RenderableManager::PrimitiveType::TRIANGLES, app.planeVertices,
                 app.planeIndices, 0, geometry.indexCount)
         .build(*engine, app.planeGeometry);
