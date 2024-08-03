@@ -82,7 +82,6 @@ private:
     Camera* camera = nullptr;
     SwapChain* swapChain = nullptr;
 
-    quatf meshRotation = quatf(1.0f, 0.0f, 0.0f, 0.0f);
     mat4f meshTransform;
 
     // App-specific

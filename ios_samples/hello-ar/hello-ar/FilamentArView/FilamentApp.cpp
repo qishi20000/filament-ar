@@ -55,15 +55,11 @@ void FilamentApp::render(const FilamentArFrame& frame) {
     camera->setModelMatrix(frame.view);
     camera->setCustomProjection(frame.projection, 0.01, 10);
 
-    // Rotate the mesh a little bit each frame.
-    meshRotation *= quatf::fromAxisAngle(float3{1.0f, 0.5f, 0.2f}, 0.05);
-
     // Update the mesh's transform.
     auto& tcm = engine->getTransformManager();
     auto i = tcm.getInstance(app.renderable);
     tcm.setTransform(i,
                      meshTransform *
-                     mat4f(meshRotation) *
                      mat4f::scaling(OBJECT_SCALE));
 
     if (renderer->beginFrame(swapChain)) {
